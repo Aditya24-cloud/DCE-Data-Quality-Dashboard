@@ -1,0 +1,7 @@
+pandas
+openpyxl
+sqlalchemy
+psycopg2-binary
+streamlit
+plotly
+fpdf2
