@@ -62,10 +62,10 @@ div.stDownloadButton:nth-of-type(3) > button {{
 
 # ── DB CONFIG — SUPABASE ──
 DB_CONFIG = {
-    "host":     "db.qrftlbjubdinkolkwavi.supabase.co",
+    "host":     "aws-1-ap-northeast-1.pooler.supabase.com",
     "port":     5432,
     "database": "postgres",
-    "user":     "postgres",
+    "user":     "postgres.qrftlbjubdinkolkwavi",
     "password": "Adityasingh2026",  # ← yahan apna pssword daalo
 }
 
