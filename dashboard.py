@@ -10,7 +10,7 @@ import tempfile
 import os
 
 st.set_page_config(
-    page_title="DIC 2026 | Data Quality Dashboard",
+    page_title="DEC | Data Quality Dashboard",
     page_icon="📊",
     layout="wide"
 )
@@ -60,12 +60,13 @@ div.stDownloadButton:nth-of-type(3) > button {{
 </style>
 """, unsafe_allow_html=True)
 
+# ── DB CONFIG — SUPABASE ──
 DB_CONFIG = {
-    "host":     "localhost",
-    "port":     5432,
-    "database": "Ninja",
+    "host":     "db.qrftlbjubdinkolkwavi.supabase.co",
+    "port":     6543,
+    "database": "postgres",
     "user":     "postgres",
-    "password": "aditya123",
+    "password": "Adityasingh2026",  # ← yahan apna pssword daalo
 }
 
 @st.cache_data(ttl=300)
@@ -526,7 +527,7 @@ with st.sidebar:
     st.markdown("---")
     st.markdown(f"**Total:** {total:,} records")
     st.markdown(f"**Clean:** {clean:,} ({health}%)")
-    st.markdown(f"**DB:** `Ninja`")
+    st.markdown(f"**DB:** `Supabase`")
 
 st.markdown("---")
 

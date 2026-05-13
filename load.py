@@ -5,11 +5,11 @@ from sqlalchemy import create_engine
 EXCEL_FILE = "DIC 2026.xlsx"
 
 DB_CONFIG = {
-    "host":     "localhost",
-    "port":     5432,
-    "database": "Ninja",
-    "user":     "postgres",
-    "password": "aditya123",  
+    "host":     "aws-1-ap-northeast-1.pooler.supabase.com",
+    "port":     6543,
+    "database": "postgres",
+    "user":     "postgres.qrftlbjubdinkolkwavi",
+    "password": "Adityasingh2026",
 }
 
 def check_email(val):
@@ -30,6 +30,11 @@ def check_website(val):
 
 def check_filled(val):
     return "missing" if pd.isna(val) or str(val).strip() == "" else "valid"
+
+def get_engine():
+    cfg = DB_CONFIG
+    url = f"postgresql+psycopg2://{cfg['user']}:{cfg['password']}@{cfg['host']}:{cfg['port']}/{cfg['database']}"
+    return create_engine(url, pool_pre_ping=True, pool_recycle=300)
 
 print("📂 Loading Excel...")
 df = pd.read_excel(EXCEL_FILE, dtype=str)
@@ -62,9 +67,7 @@ df["source_status"]          = df["Source"].apply(check_filled)
 df["status_status"]          = df["Status"].apply(check_filled)
 df["event_status"]           = df["Event"].apply(check_filled)
 
-# ── SIRF 3 KEY FIELDS PE CLEAN DECIDE KARO ──
 key_fields = ["company_status", "email1_status", "phone_mobile1_status"]
-
 df["row_quality"] = df[key_fields].apply(
     lambda row: "clean"   if all(v == "valid" for v in row)
     else ("partial" if any(v == "valid" for v in row)
@@ -76,17 +79,29 @@ print(f"   Clean rows   : {(df['row_quality']=='clean').sum():,}")
 print(f"   Partial rows : {(df['row_quality']=='partial').sum():,}")
 print(f"   Poor rows    : {(df['row_quality']=='poor').sum():,}")
 
-print("\n📡 PostgreSQL mein load ho raha hai...")
-cfg = DB_CONFIG
-url = f"postgresql+psycopg2://{cfg['user']}:{cfg['password']}@{cfg['host']}:{cfg['port']}/{cfg['database']}"
-engine = create_engine(url)
+print("\n📡 Supabase mein load ho raha hai...")
 
-df.to_sql("exhibitors_raw",    engine, if_exists="replace", index=True, index_label="id")
-df[df["row_quality"]=="clean"].to_sql("exhibitors_clean",  engine, if_exists="replace", index=True, index_label="id")
-df[df["row_quality"]!="clean"].to_sql("exhibitors_issues", engine, if_exists="replace", index=True, index_label="id")
+print("⏳ Loading exhibitors_raw (79k rows — 3-5 min lagega)...")
+eng1 = get_engine()
+df.to_sql("exhibitors_raw", eng1, if_exists="replace", index=True, index_label="id", chunksize=500)
+eng1.dispose()
+print(f"✅ exhibitors_raw → {len(df):,} rows")
 
-print(f"\n🎉 Done! 3 tables ban gayi PostgreSQL mein:")
+print("⏳ Loading exhibitors_clean...")
+eng2 = get_engine()
+clean_df = df[df["row_quality"]=="clean"].copy()
+clean_df.to_sql("exhibitors_clean", eng2, if_exists="replace", index=True, index_label="id", chunksize=500)
+eng2.dispose()
+print(f"✅ exhibitors_clean → {len(clean_df):,} rows")
+
+print("⏳ Loading exhibitors_issues...")
+eng3 = get_engine()
+issues_df = df[df["row_quality"]!="clean"].copy()
+issues_df.to_sql("exhibitors_issues", eng3, if_exists="replace", index=True, index_label="id", chunksize=500)
+eng3.dispose()
+print(f"✅ exhibitors_issues → {len(issues_df):,} rows")
+
+print(f"\n🎉 Done! 3 tables Supabase mein load ho gayi!")
 print(f"   exhibitors_raw    → {len(df):,} rows")
-print(f"   exhibitors_clean  → {(df['row_quality']=='clean').sum():,} rows")
-print(f"   exhibitors_issues → {(df['row_quality']!='clean').sum():,} rows")
-engine.dispose()
+print(f"   exhibitors_clean  → {len(clean_df):,} rows")
+print(f"   exhibitors_issues → {len(issues_df):,} rows")
