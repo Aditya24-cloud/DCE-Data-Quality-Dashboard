@@ -26,12 +26,12 @@ st.markdown(f"""
 <style>
 .stApp {{
     background-image: url("data:image/png;base64,{img}");
-    background-size: 60%;
+    background-size: 80%;
     background-repeat: no-repeat;
     background-position: center center;
     background-attachment: fixed;
     background-blend-mode: overlay;
-    background-color: rgba(255, 255, 255, 0.50);
+    background-color: rgba(255, 255, 255, 0.75);
 }}
 
 /* ── COLORED DOWNLOAD BUTTONS ── */
