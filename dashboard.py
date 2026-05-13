@@ -303,7 +303,13 @@ with g1:
             }
         }
     ))
-    gauge.update_layout(height=250, margin=dict(t=20,b=0,l=20,r=20))
+    gauge.update_layout(
+    height=250,
+    margin=dict(t=20,b=0,l=20,r=20),
+    paper_bgcolor="rgba(0,0,0,0)",
+    plot_bgcolor="rgba(0,0,0,0)",
+    font=dict(color="#1F3864")
+)
     st.plotly_chart(gauge, use_container_width=True)
 
 with g2:
