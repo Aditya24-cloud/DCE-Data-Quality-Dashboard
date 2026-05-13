@@ -6,7 +6,7 @@ EXCEL_FILE = "DIC 2026.xlsx"
 
 DB_CONFIG = {
     "host":     "aws-1-ap-northeast-1.pooler.supabase.com",
-    "port":     6543,
+    "port":     5432,
     "database": "postgres",
     "user":     "postgres.qrftlbjubdinkolkwavi",
     "password": "Adityasingh2026",
